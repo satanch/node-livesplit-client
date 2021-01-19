@@ -80,6 +80,27 @@ const LiveSplitClient = require('livesplit-client');
 })();
 ```
 
-## Methods and library API
+## Library API
 
-Library docs located at: https://github.com/satanch/node-livesplit-client/blob/main/API.md
+### Library docs
+
+[Click here and you will be navigated to the latest API docs](https://github.com/satanch/node-livesplit-client/blob/main/API.md).
+
+### Setting custom timeout
+
+Default command response timeout is 100 ms. You can set your own timeout:
+
+```js
+const LiveSplitClient = require('livesplit-client');
+const client = new LiveSplitClient('127.0.0.1:16834');
+client.timeout = 250; // Timeout in ms
+```
+
+### Sending custom commands without library methods
+
+You could use `client.send('command', expectResponse)`. Please note, that `\r\n` will be automatically added to your command.
+If your are expecting the answer, your should specify `true` as second argument of this method. In other case `Promise` will not be returned and you could potentially break answers orded.
+
+## Contribution
+
+Feel free to open new issues and PR's. Thank you!
