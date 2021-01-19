@@ -3,7 +3,7 @@ const LiveSplitClient = require('./client');
 (async () => {
     try {
         // Initialize client with LiveSplit Server's IP:PORT
-        const client = new LiveSplitClient('192.168.56.1:16834');
+        const client = new LiveSplitClient('127.0.0.1:16834');
 
         // Connected event
         client.on('connected', () => {
@@ -40,6 +40,14 @@ const LiveSplitClient = require('./client');
         const time = await client.getCurrentTime();
 
         console.log('Current time after 1 sec.:', time); // Blazing fast and accurate numbers
+
+        // Get split name
+        const splitName = await client.getCurrentSplitName();
+        console.log('Split name:', splitName);
+
+        // Get all available information
+        const info = await client.getAll();
+        console.log('Summary:', info);
 
         // Pause and reset
         await client.pause();

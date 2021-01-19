@@ -60,6 +60,14 @@ const LiveSplitClient = require('livesplit-client');
 
         console.log('Current time after 1 sec.:', time); // Blazing fast and accurate numbers
 
+        // Get split name
+        const splitName = await client.getCurrentSplitName();
+        console.log('Split name:', splitName);
+
+        // Get all available information
+        const info = await client.getAll();
+        console.log('Summary:', info);
+
         // Pause and reset
         await client.pause();
         await client.reset();

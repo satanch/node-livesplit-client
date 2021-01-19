@@ -24,7 +24,14 @@ class LiveSplitClient extends EventEmitter {
         };
 
         this._connected = false;
-        this.timeout = 2000;
+        this.timeout = 100;
+
+        /*
+            According to: https://github.com/LiveSplit/LiveSplit.Server/blob/a4a57716dce90936606bfc8f8ac84f7623773aa5/README.md#commands
+
+            When using Game Time, it's important that you call "initgametime" once. Once "initgametime" is used, an additional comparison will appear and you can switch to it via the context menu (Compare Against > Game Time). This special comparison will show everything based on the Game Time (every component now shows Game Time based information).
+        */
+        this._initGameTimeOnce = false;
 
         return this;
     }
@@ -97,14 +104,21 @@ class LiveSplitClient extends EventEmitter {
     }
 
     _waitForResponse() {
+        let listener = false;
+
         const responseRecieved = new Promise((resolve) => {
-            this.once('data', (data) => {
+            listener = (data) => {
                 resolve(data);
-            });
+            };
+
+            this.once('data', listener);
         });
 
         const responseTimeout = new Promise((resolve) => {
-            setTimeout(() => resolve(false), this.timeout);
+            setTimeout(() => {
+                this.removeListener('data', listener);
+                resolve(false);
+            }, this.timeout);
         });
 
         return Promise.race([responseRecieved, responseTimeout]);
@@ -174,9 +188,11 @@ class LiveSplitClient extends EventEmitter {
     }
 
     /**
-     * Init game time
+     * Init game time. Could be called only once according to LiveSplit Server documentation.
      */
     initGameTime() {
+        if (this._initGameTimeOnce) return false;
+        this._initGameTimeOnce = true;
         return this.send('initgametime', false);
     }
 
@@ -308,6 +324,22 @@ class LiveSplitClient extends EventEmitter {
      */
     getCurrentTimerPhase() {
         return this.send('getcurrenttimerphase', true);
+    }
+
+    /**
+     * Get all available information. Synthetic method that calls every server getter command if possible.
+     * @returns {Promise} Commands execution result or false on timeout.
+     */
+    async getAll() {
+       const output = {};
+
+        for (let method of ['getCurrentTimerPhase', 'getDelta', 'getLastSplitTime', 'getComparisonSplitTime', 'getCurrentTime', 'getFinalTime', 'getPredictedTime', 'getBestPossibleTime', 'getSplitIndex', 'getCurrentSplitName', 'getPreviousSplitname']) {
+            output[
+                method.replace('get', '').charAt(0).toLowerCase() + method.replace('get', '').slice(1)
+            ] = await this[method]();
+        }
+
+        return output;
     }
 }
 

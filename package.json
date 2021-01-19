@@ -1,6 +1,6 @@
 {
   "name": "livesplit-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "LiveSplit Server Node.js client implementation",
   "main": "client.js",
   "scripts": {
@@ -11,5 +11,10 @@
     "server"
   ],
   "author": "satanch",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/satanch/node-livesplit-client.git"
+  },
+  "homepage": "https://github.com/satanch/node-livesplit-client#readme"
 }
