@@ -1,0 +1,15 @@
+{
+  "name": "livesplit-client",
+  "version": "0.1.0",
+  "description": "LiveSplit Server Node.js client implementation",
+  "main": "client.js",
+  "scripts": {
+    "doc": "jsdoc2md ./src/LiveSplitClient.js > ./API.md"
+  },
+  "keywords": [
+    "livesplit",
+    "server"
+  ],
+  "author": "satanch",
+  "license": "MIT"
+}
