@@ -35,6 +35,7 @@ Node.js client for the LiveSplit Server running instance
     * [.getCurrentSplitName()](#LiveSplitClient+getCurrentSplitName) ⇒ <code>Promise</code>
     * [.getPreviousSplitname()](#LiveSplitClient+getPreviousSplitname) ⇒ <code>Promise</code>
     * [.getCurrentTimerPhase()](#LiveSplitClient+getCurrentTimerPhase) ⇒ <code>Promise</code>
+    * [.getAll()](#LiveSplitClient+getAll) ⇒ <code>Promise</code>
 
 <a name="new_LiveSplitClient_new"></a>
 
@@ -121,7 +122,7 @@ Reset
 <a name="LiveSplitClient+initGameTime"></a>
 
 ### liveSplitClient.initGameTime()
-Init game time
+Init game time. Could be called only once according to LiveSplit Server documentation.
 
 **Kind**: instance method of [<code>LiveSplitClient</code>](#LiveSplitClient)  
 <a name="LiveSplitClient+setGameTime"></a>
@@ -256,3 +257,10 @@ Get current timer phase
 
 **Kind**: instance method of [<code>LiveSplitClient</code>](#LiveSplitClient)  
 **Returns**: <code>Promise</code> - Command result or false on timeout.  
+<a name="LiveSplitClient+getAll"></a>
+
+### liveSplitClient.getAll() ⇒ <code>Promise</code>
+Get all available information. Synthetic method that calls every server getter command if possible.
+
+**Kind**: instance method of [<code>LiveSplitClient</code>](#LiveSplitClient)  
+**Returns**: <code>Promise</code> - Commands execution result or false on timeout.  
