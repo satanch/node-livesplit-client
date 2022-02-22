@@ -7,6 +7,7 @@ Node.js client for the LiveSplit Server running instance
 
 * [LiveSplitClient](#LiveSplitClient)
     * [new LiveSplitClient(address)](#new_LiveSplitClient_new)
+    * [.connected](#LiveSplitClient+connected) : <code>boolean</code>
     * [.connect()](#LiveSplitClient+connect) ⇒ <code>Promise</code>
     * [.disconnect()](#LiveSplitClient+disconnect) ⇒ <code>boolean</code>
     * [.send(command, [expectResponse])](#LiveSplitClient+send) ⇒ <code>Promise</code> \| <code>boolean</code>
@@ -33,7 +34,7 @@ Node.js client for the LiveSplit Server running instance
     * [.getBestPossibleTime()](#LiveSplitClient+getBestPossibleTime) ⇒ <code>Promise</code>
     * [.getSplitIndex()](#LiveSplitClient+getSplitIndex) ⇒ <code>Promise</code>
     * [.getCurrentSplitName()](#LiveSplitClient+getCurrentSplitName) ⇒ <code>Promise</code>
-    * [.getPreviousSplitname()](#LiveSplitClient+getPreviousSplitname) ⇒ <code>Promise</code>
+    * [.getPreviousSplitName()](#LiveSplitClient+getPreviousSplitName) ⇒ <code>Promise</code>
     * [.getCurrentTimerPhase()](#LiveSplitClient+getCurrentTimerPhase) ⇒ <code>Promise</code>
     * [.getAll()](#LiveSplitClient+getAll) ⇒ <code>Promise</code>
 
@@ -45,6 +46,12 @@ Node.js client for the LiveSplit Server running instance
 | --- | --- | --- |
 | address | <code>string</code> | Connection address, like: 127.0.0.1:1234 |
 
+<a name="LiveSplitClient+connected"></a>
+
+### liveSplitClient.connected : <code>boolean</code>
+Client connection status.
+
+**Kind**: instance property of [<code>LiveSplitClient</code>](#LiveSplitClient)  
 <a name="LiveSplitClient+connect"></a>
 
 ### liveSplitClient.connect() ⇒ <code>Promise</code>
@@ -244,9 +251,9 @@ Get current split name
 
 **Kind**: instance method of [<code>LiveSplitClient</code>](#LiveSplitClient)  
 **Returns**: <code>Promise</code> - Command result or null on timeout.  
-<a name="LiveSplitClient+getPreviousSplitname"></a>
+<a name="LiveSplitClient+getPreviousSplitName"></a>
 
-### liveSplitClient.getPreviousSplitname() ⇒ <code>Promise</code>
+### liveSplitClient.getPreviousSplitName() ⇒ <code>Promise</code>
 Get previous split name
 
 **Kind**: instance method of [<code>LiveSplitClient</code>](#LiveSplitClient)  

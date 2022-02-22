@@ -1,6 +1,6 @@
 {
   "name": "livesplit-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "LiveSplit Server Node.js client implementation",
   "main": "client.js",
   "scripts": {

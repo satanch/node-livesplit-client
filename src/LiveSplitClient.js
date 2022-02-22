@@ -1,5 +1,6 @@
 const net = require('net');
 const EventEmitter = require('events');
+const { deprecate } = require('util');
 
 /**
  * Node.js client for the LiveSplit Server running instance
@@ -32,6 +33,8 @@ class LiveSplitClient extends EventEmitter {
             When using Game Time, it's important that you call "initgametime" once. Once "initgametime" is used, an additional comparison will appear and you can switch to it via the context menu (Compare Against > Game Time). This special comparison will show everything based on the Game Time (every component now shows Game Time based information).
         */
         this._initGameTimeOnce = false;
+
+        this.getPreviousSplitname = deprecate(this.getPreviousSplitname, 'Method "getPreviousSplitname" is deprecated! Please, use "getPreviousSplitName" (capital letter "N") instead.');
 
         return this;
     }
@@ -78,6 +81,14 @@ class LiveSplitClient extends EventEmitter {
         this._socket.destroy();
         this._connected = false;
         return true;
+    }
+
+    /**
+     * Client connection status.
+     * @type {boolean}
+     */
+    get connected() {
+        return this._connected;
     }
 
     /**
@@ -328,10 +339,14 @@ class LiveSplitClient extends EventEmitter {
      * Get previous split name
      * @returns {Promise} Command result or null on timeout.
      */
-    getPreviousSplitname() {
+    getPreviousSplitName() {
         return this.send('getprevioussplitname', true);
     }
-    
+
+    getPreviousSplitname() {
+        return this.getPreviousSplitName();
+    }
+
     /**
      * Get current timer phase
      * @returns {Promise} Command result or null on timeout.
@@ -347,7 +362,7 @@ class LiveSplitClient extends EventEmitter {
     async getAll() {
        const output = {};
 
-        for (let method of ['getCurrentTimerPhase', 'getDelta', 'getLastSplitTime', 'getComparisonSplitTime', 'getCurrentTime', 'getFinalTime', 'getPredictedTime', 'getBestPossibleTime', 'getSplitIndex', 'getCurrentSplitName', 'getPreviousSplitname']) {
+        for (let method of ['getCurrentTimerPhase', 'getDelta', 'getLastSplitTime', 'getComparisonSplitTime', 'getCurrentTime', 'getFinalTime', 'getPredictedTime', 'getBestPossibleTime', 'getSplitIndex', 'getCurrentSplitName', 'getPreviousSplitName']) {
             output[
                 method.replace('get', '').charAt(0).toLowerCase() + method.replace('get', '').slice(1)
             ] = await this[method]();
