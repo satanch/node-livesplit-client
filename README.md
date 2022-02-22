@@ -79,6 +79,11 @@ const LiveSplitClient = require('livesplit-client');
             console.log('Disconnected!');
         });
 
+        // Error event
+        client.on('error', (err) => {
+            console.log(err);
+        });
+
         // Raw data reciever
         client.on('data', (data) => {
             console.log('Debug data:', data);
@@ -94,8 +99,8 @@ const LiveSplitClient = require('livesplit-client');
         // Connect to the server, Promise will be resolved when the connection will be succesfully established
         await client.connect();
 
-        // Start timer. Don't forget to WAIT Promise resolve, library does not have any queue implementation!
-        await client.startOrSplit();
+        // Start timer
+        client.startOrSplit();
 
         // Wait for 1 sec
         await sleep(1000);
