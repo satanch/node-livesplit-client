@@ -265,7 +265,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getDelta(comparison = '') {
-        if (comparison.length > 0) comparison = ` ${comparison}`;
+        if (comparison) comparison = ` ${comparison}`;
         return this.send(`getdelta${comparison}`, true);
     }
     
@@ -299,16 +299,18 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getFinalTime(comparison = '') {
-        if (comparison.length > 0) comparison = ` ${comparison}`;
+        if (comparison) comparison = ` ${comparison}`;
         return this.send(`getfinaltime${comparison}`, true);
     }
     
     /**
      * Get predicted time
+     * @param {string} [comparison] - Comparison
      * @returns {Promise} Command result or null on timeout.
      */
-    getPredictedTime(comparison) {
-        return this.send(`getpredictedtime ${comparison}`, true);
+    getPredictedTime(comparison = '') {
+        if (comparison) comparison = ` ${comparison}`;
+        return this.send(`getpredictedtime${comparison}`, true);
     }
     
     /**
