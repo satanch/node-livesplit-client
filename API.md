@@ -30,7 +30,7 @@ Node.js client for the LiveSplit Server running instance
     * [.getComparisonSplitTime()](#LiveSplitClient+getComparisonSplitTime) ⇒ <code>Promise</code>
     * [.getCurrentTime()](#LiveSplitClient+getCurrentTime) ⇒ <code>Promise</code>
     * [.getFinalTime([comparison])](#LiveSplitClient+getFinalTime) ⇒ <code>Promise</code>
-    * [.getPredictedTime()](#LiveSplitClient+getPredictedTime) ⇒ <code>Promise</code>
+    * [.getPredictedTime([comparison])](#LiveSplitClient+getPredictedTime) ⇒ <code>Promise</code>
     * [.getBestPossibleTime()](#LiveSplitClient+getBestPossibleTime) ⇒ <code>Promise</code>
     * [.getSplitIndex()](#LiveSplitClient+getSplitIndex) ⇒ <code>Promise</code>
     * [.getCurrentSplitName()](#LiveSplitClient+getCurrentSplitName) ⇒ <code>Promise</code>
@@ -225,11 +225,16 @@ Get final time
 
 <a name="LiveSplitClient+getPredictedTime"></a>
 
-### liveSplitClient.getPredictedTime() ⇒ <code>Promise</code>
+### liveSplitClient.getPredictedTime([comparison]) ⇒ <code>Promise</code>
 Get predicted time
 
 **Kind**: instance method of [<code>LiveSplitClient</code>](#LiveSplitClient)  
 **Returns**: <code>Promise</code> - Command result or null on timeout.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [comparison] | <code>string</code> | Comparison |
+
 <a name="LiveSplitClient+getBestPossibleTime"></a>
 
 ### liveSplitClient.getBestPossibleTime() ⇒ <code>Promise</code>
