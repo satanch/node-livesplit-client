@@ -94,10 +94,10 @@ class LiveSplitClient extends EventEmitter {
     /**
      * Send command to the LiveSplit Server instance.
      * @param {string} command - Existing LiveSplit Server command without linebreaks.
-     * @param {boolean} [expectResponse=true] - Expect response from the server.
+     * @param {object} [data] - Additional data to be sent with the command.
      * @returns {Promise|boolean} - Promise if answer was expected, else true.
      */
-    send(command, expectResponse = true) {
+    send(command, data) {
         if (!this._connected)
             throw new Error('Client must be connected to the server!');
 
@@ -106,12 +106,10 @@ class LiveSplitClient extends EventEmitter {
 
         this._checkDisallowedSymbols(command);
 
-        this._socket.write(`${command}\r\n`);
+        var jsonString = JSON.stringify({ command, data });
+        this._socket.write(`${jsonString}\r\n`);
 
-        if (expectResponse)
-            return this._waitForResponse();
-        else
-            return true;
+        return this._waitForResponse();
     }
 
     _waitForResponse() {
@@ -147,7 +145,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     startTimer() {
-        return this.send('starttimer', false);  
+        return this.send('starttimer');  
     }
 
     /**
@@ -155,7 +153,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     startOrSplit() {
-        return this.send('startorsplit', false);
+        return this.send('startorsplit');
     }
     
     /**
@@ -163,7 +161,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     split() {
-        return this.send('split', false);       
+        return this.send('split');       
     }
 
     /**
@@ -171,7 +169,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     unsplit() {
-        return this.send('unsplit', false);
+        return this.send('unsplit');
     }
 
     /**
@@ -179,7 +177,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     skipSplit() {
-        return this.send('skipsplit', false);
+        return this.send('skipsplit');
     }
 
     /**
@@ -187,7 +185,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     pause() {
-        return this.send('pause', false);
+        return this.send('pause');
     }
 
     /**
@@ -195,7 +193,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     resume() {
-        return this.send('resume', false);
+        return this.send('resume');
     }
     
     /**
@@ -203,7 +201,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     reset() {
-        return this.send('reset', false);
+        return this.send('reset');
     }
 
     /**
@@ -213,7 +211,7 @@ class LiveSplitClient extends EventEmitter {
     initGameTime() {
         if (this._initGameTimeOnce) return false;
         this._initGameTimeOnce = true;
-        return this.send('initgametime', false);
+        return this.send('initgametime');
     }
 
     /**
@@ -222,7 +220,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     setGameTime(time) {
-        return this.send(`setgametime ${time}`, false);
+        return this.send('setgametime', { time });
     }
     
     /**
@@ -231,7 +229,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     setLoadingTimes(time) {
-        return this.send(`setloadingtimes ${time}`, false);
+        return this.send('setloadingtimes', { time });
     }
 
     /**
@@ -239,7 +237,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     pauseGameTime() {
-        return this.send('pausegametime', false);
+        return this.send('pausegametime');
     }
 
     /**
@@ -247,7 +245,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     unpauseGameTime() {
-        return this.send('unpausegametime', false);
+        return this.send('unpausegametime');
     }
     
     /**
@@ -256,7 +254,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {boolean}
      */
     setComparison(comparison) {
-        return this.send(`setcomparison ${comparison}`, false);
+        return this.send('setcomparison', { comparison });
     }
 
     /**
@@ -265,8 +263,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getDelta(comparison = '') {
-        if (comparison) comparison = ` ${comparison}`;
-        return this.send(`getdelta${comparison}`, true);
+        return this.send('getdelta', { comparison });
     }
     
     /**
@@ -274,7 +271,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getLastSplitTime() {
-        return this.send('getlastsplittime', true);
+        return this.send('getlastsplittime');
     }
     
     /**
@@ -282,7 +279,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getComparisonSplitTime() {
-        return this.send('getcomparisonsplittime', true);
+        return this.send('getcomparisonsplittime');
     }
     
     /**
@@ -290,7 +287,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getCurrentTime() {
-        return this.send('getcurrenttime', true);
+        return this.send('getcurrenttime');
     }
 
     /**
@@ -299,8 +296,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getFinalTime(comparison = '') {
-        if (comparison) comparison = ` ${comparison}`;
-        return this.send(`getfinaltime${comparison}`, true);
+        return this.send('getfinaltime', { comparison });
     }
     
     /**
@@ -309,8 +305,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getPredictedTime(comparison = '') {
-        if (comparison) comparison = ` ${comparison}`;
-        return this.send(`getpredictedtime${comparison}`, true);
+        return this.send('getpredictedtime', { comparison });
     }
     
     /**
@@ -318,7 +313,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getBestPossibleTime() {
-        return this.send('getbestpossibletime', true);
+        return this.send('getbestpossibletime');
     }
     
     /**
@@ -326,7 +321,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getSplitIndex() {
-        return this.send('getsplitindex', true);
+        return this.send('getsplitindex');
     }
     
     /**
@@ -334,7 +329,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getCurrentSplitName() {
-        return this.send('getcurrentsplitname', true);
+        return this.send('getcurrentsplitname');
     }
     
     /**
@@ -342,7 +337,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getPreviousSplitName() {
-        return this.send('getprevioussplitname', true);
+        return this.send('getprevioussplitname');
     }
 
     getPreviousSplitname() {
@@ -354,7 +349,7 @@ class LiveSplitClient extends EventEmitter {
      * @returns {Promise} Command result or null on timeout.
      */
     getCurrentTimerPhase() {
-        return this.send('getcurrenttimerphase', true);
+        return this.send('getcurrenttimerphase');
     }
 
     /**
