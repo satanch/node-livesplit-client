@@ -54,10 +54,13 @@ class LiveSplitClient extends EventEmitter {
             });
 
             this._socket.on('data', (data) => {
-                this.emit(
-                    'data',
-                    data.toString('utf-8').replace('\r\n', '')
-                );
+                // This should catch edge cases where multiple messages are sent by the server
+                // so fast that this listener only fires once with all of them (concatenated).
+                // This allows for polling at a much faster rate with fewer errors.
+                const messages = data.toString('utf-8').split('\r\n');
+                messages.forEach(message => {
+                    this.emit('data', message);
+                });
             });
 
             this._socket.on('error', (err) => {
