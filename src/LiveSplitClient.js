@@ -1,6 +1,7 @@
 const net = require('net');
 const EventEmitter = require('events');
 const { deprecate } = require('util');
+const crypto = require('crypto');
 
 /**
  * Node.js client for the LiveSplit Server running instance
@@ -26,6 +27,7 @@ class LiveSplitClient extends EventEmitter {
 
         this._connected = false;
         this.timeout = 100;
+        this._openRequests = {};
 
         /*
             According to: https://github.com/LiveSplit/LiveSplit.Server/blob/a4a57716dce90936606bfc8f8ac84f7623773aa5/README.md#commands
@@ -57,9 +59,9 @@ class LiveSplitClient extends EventEmitter {
                 // This should catch edge cases where multiple messages are sent by the server
                 // so fast that this listener only fires once with all of them (concatenated).
                 // This allows for polling at a much faster rate with fewer errors.
-                const messages = data.toString('utf-8').split('\r\n');
+                const messages = data.toString('utf-8').split('\r\n').slice(0, -1);
                 messages.forEach(message => {
-                    this.emit('data', message);
+                    this.emit('data', JSON.parse(message));
                 });
             });
 
@@ -98,7 +100,7 @@ class LiveSplitClient extends EventEmitter {
      * Send command to the LiveSplit Server instance.
      * @param {string} command - Existing LiveSplit Server command without linebreaks.
      * @param {object} [data] - Additional data to be sent with the command.
-     * @returns {Promise|boolean} - Promise if answer was expected, else true.
+     * @returns {Promise} - Command result or null on timeout.
      */
     send(command, data) {
         if (!this._connected)
@@ -109,26 +111,33 @@ class LiveSplitClient extends EventEmitter {
 
         this._checkDisallowedSymbols(command);
 
-        var jsonString = JSON.stringify({ command, data });
-        this._socket.write(`${jsonString}\r\n`);
+        const nonce = crypto.randomUUID();
+        const request = { command, data, nonce };
+        this._socket.write(`${JSON.stringify(request)}\r\n`);
+        this._openRequests[nonce] = request;
 
-        return this._waitForResponse();
+        return this._waitForResponse(request);
     }
 
-    _waitForResponse() {
+    _waitForResponse(request) {
         let listener = false;
 
         const responseRecieved = new Promise((resolve) => {
             listener = (data) => {
-                resolve(JSON.parse(data));
+                if (data.nonce === request.nonce) {
+                    this.off('data', listener);
+                    delete this._openRequests[request.nonce];
+                    resolve(data);
+                }
             };
 
-            this.once('data', listener);
+            this.on('data', listener);
         });
 
         const responseTimeout = new Promise((resolve) => {
             setTimeout(() => {
-                this.removeListener('data', listener);
+                this.off('data', listener);
+                delete this._openRequests[request.nonce];
                 resolve(null);
             }, this.timeout);
         });
