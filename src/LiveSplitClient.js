@@ -26,6 +26,9 @@ class LiveSplitClient extends EventEmitter {
 
         this._connected = false;
         this.timeout = 100;
+        this._processingCommands = false;
+        this._commands = [];
+        this._noResponseCommands = [];
 
         /*
             According to: https://github.com/LiveSplit/LiveSplit.Server/blob/a4a57716dce90936606bfc8f8ac84f7623773aa5/README.md#commands
@@ -106,33 +109,63 @@ class LiveSplitClient extends EventEmitter {
 
         this._checkDisallowedSymbols(command);
 
-        this._socket.write(`${command}\r\n`);
+        command = `${command}\r\n`;
 
-        if (expectResponse)
-            return this._waitForResponse();
-        else
+        if (expectResponse) {
+            let resolve = null;
+            let promise = new Promise((res) => {
+                resolve = res;
+            });
+
+            this._commands.push({
+                command,
+                resolve
+            });
+
+            if (!this._processingCommands)
+                this._sendNext();
+
+            return promise;
+        } else {
+            if (!this._processingCommands)
+                this._socket.write(command);
+            else
+                this._noResponseCommands.push(command);
+
             return true;
+        }
     }
 
-    _waitForResponse() {
-        let listener = false;
+    _sendNext() {
+        if (this._commands.length === 0) {
+            this._processingCommands = false;
 
-        const responseRecieved = new Promise((resolve) => {
-            listener = (data) => {
-                resolve(data);
-            };
+            while (this._noResponseCommands.length > 0)
+                this._socket.write(this._noResponseCommands.pop());
 
-            this.once('data', listener);
-        });
+            return;
+        }
 
-        const responseTimeout = new Promise((resolve) => {
-            setTimeout(() => {
-                this.removeListener('data', listener);
-                resolve(null);
-            }, this.timeout);
-        });
+        this._processingCommands = true;
 
-        return Promise.race([responseRecieved, responseTimeout]);
+        let next = this._commands[0];
+
+        let timeout = setTimeout(() => {
+            this._commands.shift();
+            this.removeListener('data', listener);
+            next.resolve(null);
+            this._sendNext();
+        }, this.timeout);
+
+        let listener = (data) => {
+            this._commands.shift();
+            clearTimeout(timeout);
+            next.resolve(data);
+            this._sendNext();
+        };
+
+        this.once('data', listener);
+        this._socket.write(next.command);
     }
 
     _checkDisallowedSymbols(str) {
