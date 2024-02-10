@@ -27,7 +27,7 @@ const LiveSplitClient = require('livesplit-client');
         // Connect to the server, Promise will be resolved when the connection will be succesfully established
         await client.connect();
 
-        // Start timer. Don't forget to WAIT Promise resolve if answer is expected, library does not have any queue implementation!
+        // Start timer.
         client.startOrSplit();
 
         // Job done, now we can close this connection
