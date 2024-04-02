@@ -12,8 +12,7 @@ npm install livesplit-client
 
 ## How to use
 
-* Download and move [LiveSplit Server component](https://github.com/LiveSplit/LiveSplit.Server) into your LiveSplit `Components` folder.
-* Add server component into your layout, run the server from "Control" menu.
+* Enable [LiveSplit Server](https://github.com/LiveSplit/LiveSplit?tab=readme-ov-file#the-livesplit-server).
 * Then look into this usage example:
 
 ```js
